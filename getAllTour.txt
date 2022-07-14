@@ -1,0 +1,84 @@
+exports.getAllTours = async (req, res) => {
+  try {
+    //1 : find data rely on query : ex: duration  = 5; duration[gtl] = 5...
+    // const queryObj = { ...req.query };
+    // const excludedFields = [
+    //   'page',
+    //   'sort',
+    //   'limit',
+    //   'fields',
+    // ];
+    // const queryObjKeys = Object.keys(queryObj);
+    // excludedFields.forEach(
+    //   (el) => delete queryObj[el]
+    // );
+    // queryObjKeys.forEach((key) => {
+    //   if (!queryObj[key]) {
+    //     delete queryObj[key];
+    //   }
+    // });
+    // let queryString = JSON.stringify(queryObj);
+    // queryString = queryString.replace(
+    //   /\b(gt|gte|lt|lte)\b/g,
+    //   (newEl) => `$${newEl}`
+    // );
+    // let query = Tour.find(
+    //   JSON.parse(queryString)
+    // );
+    //2 SORT
+    // if (req.query.sort) {
+    //   const sortBy = req.query.sort
+    //     .split(',')
+    //     .join('');
+    //   query = query.sort(sortBy);
+    // } else {
+    //   query = query.sort('-createAt');
+    // }
+    //3 Field limiting :chỉ định những field cần lấy
+    // if (req.query.fields) {
+    //   const fields = req.query.fields
+    //     .split(',')
+    //     .join(' ');
+    //   query = query.select(fields);
+    // } else {
+    //   query = query.select('-__v'); //__v is internal value of express
+    // }
+    //4 Pagination
+    // const page = req.query.page * 1 || 1;
+    // const limit = req.query.limit * 1 || 100;
+    // const skip = (page - 1) * limit;
+
+    // query = query.skip(skip).limit(limit);
+    // if (req.query.page) {
+    //   const numTours =
+    //     await Tour.countDocuments();
+    //   if (skip >= numTours) {
+    //     throw new Error(
+    //       'This page does not exist'
+    //     );
+    //   }
+    // }
+    //EXECUTE
+    const features = new APIFeatures(Tour.find(), req.query)
+      .filter()
+      .sort()
+      .limitFields()
+      .pagination();
+
+    const tours = await features.query;
+    //SEN RESPONSE
+    res.status(200).json({
+      status: 'success',
+      requestAt: req.requestTime,
+      results: tours.length,
+      data: {
+        tours,
+      },
+    });
+  } catch (err) {
+    res.status(404).json({
+      status: 'fail',
+      message: err.message,
+    });
+  }
+};

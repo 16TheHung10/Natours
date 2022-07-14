@@ -1,0 +1,26 @@
+- lấy ID từ URL: req.params.(id)
+- Tạo middle ware dựa theo id: express:
+    const router = express.Router();
+    router.param('id', tourController.checkID)
+- Tạo middleware theo từng method: truyền middleware làm đối số thứ nhất, controller làm đối số thứ 2
+- Có thể sort theo nhiều field : sort=price,duration (nhưng phải split rồi join các field đó lai thành 1 màng )
+- save middleware chỉ áp dụng cho save và create. không áp dụng cho inserMany, findByIdandUpdate...
+-library for validate: validator github
+-Khi pass argument vào thg next thì tất cả arg đó đều là error.
+ Và nó sẽ skip tất cả các middleware trong stack và nhảy luôn vào thg middleware error global 
+-catchAsync: https://www.udemy.com/course/nodejs-express-mongodb-bootcamp/learn/lecture/15087362#questions/9041656
+    + Mỗi handler/middleware trong express đều nhận req,res,next làm tham số truyền vào
+      Nên ta có thể viết middlewareName = (req,res,next)=>{
+        //some thing...
+      }
+      Nhưng nếu viết như vậy thì ta không thể .next được và ta cần viết như sau:
+      myFunction = (req,res,next)=>{
+        ....
+      }
+      middlewareName = (req,res,next)=>{  **********
+        myFunction().catch(next)
+      }
+      Viết như trên cũng rất ok nhưng nếu viết như vậy ta cứ phải viết riêng function ra ngoài xong pass vào
+      và cách fix đó là bọc tất cả lại trong catchAsync và ta viết trực tiếp function lkamf tham số đầu tiên của catchAsync là xong
+      Tiếp tục phân tích: ở hàm catchAsync ta return (req,res,next )=>{...} có nghĩa là khi ở middleware ta gọi hàm catchAsync(viết có dấu ngoặc này là gọi luôn rồi chứ gì nữa)
+      thì nó sẽ có kiểu như function ********** kia
